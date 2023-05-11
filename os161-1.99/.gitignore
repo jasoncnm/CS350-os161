@@ -1,0 +1,8 @@
+*/*/*/.depend
+*/*/*/build
+build
+cscope.out
+tags
+kern/compile/ASST*
+user/testbin/randcall/calls.c
+defs.mk
