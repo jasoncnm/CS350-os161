@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
- *	The President and Fellows of Harvard College.
+ *  The President and Fellows of Harvard College.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,10 +44,10 @@
  * internally.
  */
 struct semaphore {
-        char *sem_name;
-	struct wchan *sem_wchan;
-	struct spinlock sem_lock;
-        volatile int sem_count;
+    char *sem_name;
+    struct wchan *sem_wchan;
+    struct spinlock sem_lock;
+    volatile int sem_count;
 };
 
 struct semaphore *sem_create(const char *name, int initial_count);
@@ -73,9 +73,12 @@ void V(struct semaphore *);
  * (should be) made internally.
  */
 struct lock {
-        char *lk_name;
-        // add what you need here
-        // (don't forget to mark things volatile as needed)
+    char *lk_name;
+    // add what you need here
+    struct wchan *lk_wchan;
+    struct spinlock lk_lock;
+    volatile int lk_state;
+    // (don't forget to mark things volatile as needed)
 };
 
 struct lock *lock_create(const char *name);

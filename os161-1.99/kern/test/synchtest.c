@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
- *	The President and Fellows of Harvard College.
+ *  The President and Fellows of Harvard College.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -63,65 +63,65 @@ static
 void
 cleanitems(void)
 {
-	kprintf("cleanitems: Destroying sems, locks, and cvs\n");
-	sem_destroy(testsem);
-	lock_destroy(testlock);
-	cv_destroy(testcv);
-	sem_destroy(donesem);
-	}
+    kprintf("cleanitems: Destroying sems, locks, and cvs\n");
+    sem_destroy(testsem);
+    lock_destroy(testlock);
+    cv_destroy(testcv);
+    sem_destroy(donesem);
+    }
 #endif
 
 static
 void
 inititems(void)
 {
-	if (testsem==NULL) {
-		testsem = sem_create("testsem", 2);
-		if (testsem == NULL) {
-			panic("synchtest: sem_create failed\n");
-		}
-	}
-	if (testlock==NULL) {
-		testlock = lock_create("testlock");
-		if (testlock == NULL) {
-			panic("synchtest: lock_create failed\n");
-		}
-	}
-	if (testcv==NULL) {
+    if (testsem==NULL) {
+        testsem = sem_create("testsem", 2);
+        if (testsem == NULL) {
+            panic("synchtest: sem_create failed\n");
+        }
+    }
+    if (testlock==NULL) {
+        testlock = lock_create("testlock");
+        if (testlock == NULL) {
+            panic("synchtest: lock_create failed\n");
+        }
+    }
+    if (testcv==NULL) {
 #ifdef UW
-		testcv = cv_create("testcv");
+        testcv = cv_create("testcv");
 #else
-		testcv = cv_create("testlock");
+        testcv = cv_create("testlock");
 #endif
-		if (testcv == NULL) {
-			panic("synchtest: cv_create failed\n");
-		}
-	}
-	if (donesem==NULL) {
-		donesem = sem_create("donesem", 0);
-		if (donesem == NULL) {
-			panic("synchtest: sem_create failed\n");
-		}
-	}
+        if (testcv == NULL) {
+            panic("synchtest: cv_create failed\n");
+        }
+    }
+    if (donesem==NULL) {
+        donesem = sem_create("donesem", 0);
+        if (donesem == NULL) {
+            panic("synchtest: sem_create failed\n");
+        }
+    }
 }
 
 static
 void
 semtestthread(void *junk, unsigned long num)
 {
-	int i;
-	(void)junk;
+    int i;
+    (void)junk;
 
-	/*
-	 * Only one of these should print at a time.
-	 */
-	P(testsem);
-	kprintf("Thread %2lu: ", num);
-	for (i=0; i<NSEMLOOPS; i++) {
-		kprintf("%c", (int)num+64);
-	}
-	kprintf("\n");
-	V(donesem);
+    /*
+     * Only one of these should print at a time.
+     */
+    P(testsem);
+    kprintf("Thread %2lu: ", num);
+    for (i=0; i<NSEMLOOPS; i++) {
+        kprintf("%c", (int)num+64);
+    }
+    kprintf("\n");
+    V(donesem);
 #ifdef UW
   thread_exit();
 #endif
@@ -130,95 +130,95 @@ semtestthread(void *junk, unsigned long num)
 int
 semtest(int nargs, char **args)
 {
-	int i, result;
+    int i, result;
 
-	(void)nargs;
-	(void)args;
+    (void)nargs;
+    (void)args;
 
-	inititems();
-	kprintf("Starting semaphore test...\n");
-	kprintf("If this hangs, it's broken: ");
-	P(testsem);
-	P(testsem);
-	kprintf("ok\n");
+    inititems();
+    kprintf("Starting semaphore test...\n");
+    kprintf("If this hangs, it's broken: ");
+    P(testsem);
+    P(testsem);
+    kprintf("ok\n");
 
-	for (i=0; i<NTHREADS; i++) {
-		result = thread_fork("semtest", NULL, semtestthread, NULL, i);
-		if (result) {
-			panic("semtest: thread_fork failed: %s\n", 
-			      strerror(result));
-		}
-	}
+    for (i=0; i<NTHREADS; i++) {
+        result = thread_fork("semtest", NULL, semtestthread, NULL, i);
+        if (result) {
+            panic("semtest: thread_fork failed: %s\n", 
+                  strerror(result));
+        }
+    }
 
-	for (i=0; i<NTHREADS; i++) {
-		V(testsem);
-		P(donesem);
-	}
+    for (i=0; i<NTHREADS; i++) {
+        V(testsem);
+        P(donesem);
+    }
 
-	/* so we can run it again */
-	V(testsem);
-	V(testsem);
+    /* so we can run it again */
+    V(testsem);
+    V(testsem);
 
 #ifdef UW
   cleanitems();
 #endif
-	kprintf("Semaphore test done.\n");
-	return 0;
+    kprintf("Semaphore test done.\n");
+    return 0;
 }
 
 static
 void
 fail(unsigned long num, const char *msg)
 {
-	kprintf("thread %lu: Mismatch on %s\n", num, msg);
-	kprintf("Test failed\n");
+    kprintf("thread %lu: Mismatch on %s\n", num, msg);
+    kprintf("Test failed\n");
 
-	lock_release(testlock);
+    lock_release(testlock);
 
-	V(donesem);
-	thread_exit();
+    V(donesem);
+    thread_exit();
 }
 
 static
 void
 locktestthread(void *junk, unsigned long num)
 {
-	int i;
-	(void)junk;
+    int i;
+    (void)junk;
 
-	for (i=0; i<NLOCKLOOPS; i++) {
-		lock_acquire(testlock);
-		testval1 = num;
-		testval2 = num*num;
-		testval3 = num%3;
+    for (i=0; i<NLOCKLOOPS; i++) {
+        lock_acquire(testlock);
+        testval1 = num;
+        testval2 = num*num;
+        testval3 = num%3;
 
-		if (testval2 != testval1*testval1) {
-			fail(num, "testval2/testval1");
-		}
+        if (testval2 != testval1*testval1) {
+            fail(num, "testval2/testval1");
+        }
 
-		if (testval2%3 != (testval3*testval3)%3) {
-			fail(num, "testval2/testval3");
-		}
+        if (testval2%3 != (testval3*testval3)%3) {
+            fail(num, "testval2/testval3");
+        }
 
-		if (testval3 != testval1%3) {
-			fail(num, "testval3/testval1");
-		}
+        if (testval3 != testval1%3) {
+            fail(num, "testval3/testval1");
+        }
 
-		if (testval1 != num) {
-			fail(num, "testval1/num");
-		}
+        if (testval1 != num) {
+            fail(num, "testval1/num");
+        }
 
-		if (testval2 != num*num) {
-			fail(num, "testval2/num");
-		}
+        if (testval2 != num*num) {
+            fail(num, "testval2/num");
+        }
 
-		if (testval3 != num%3) {
-			fail(num, "testval3/num");
-		}
+        if (testval3 != num%3) {
+            fail(num, "testval3/num");
+        }
 
-		lock_release(testlock);
-	}
-	V(donesem);
+        lock_release(testlock);
+    }
+    V(donesem);
 #ifdef UW
   thread_exit();
 #endif
@@ -228,83 +228,83 @@ locktestthread(void *junk, unsigned long num)
 int
 locktest(int nargs, char **args)
 {
-	int i, result;
+    int i, result;
 
-	(void)nargs;
-	(void)args;
+    (void)nargs;
+    (void)args;
 
-	inititems();
-	kprintf("Starting lock test...\n");
+    inititems();
+    kprintf("Starting lock test...\n");
 
-	for (i=0; i<NTHREADS; i++) {
-		result = thread_fork("synchtest", NULL, locktestthread,
-				     NULL, i);
-		if (result) {
-			panic("locktest: thread_fork failed: %s\n",
-			      strerror(result));
-		}
-	}
-	for (i=0; i<NTHREADS; i++) {
-		P(donesem);
-	}
+    for (i=0; i<NTHREADS; i++) {
+        result = thread_fork("synchtest", NULL, locktestthread,
+                     NULL, i);
+        if (result) {
+            panic("locktest: thread_fork failed: %s\n",
+                  strerror(result));
+        }
+    }
+    for (i=0; i<NTHREADS; i++) {
+        P(donesem);
+    }
 
 #ifdef UW
   cleanitems();
 #endif
-	kprintf("Lock test done.\n");
+    kprintf("Lock test done.\n");
 
-	return 0;
+    return 0;
 }
 
 static
 void
 cvtestthread(void *junk, unsigned long num)
 {
-	int i;
-	volatile int j;
-	time_t secs1, secs2;
-	uint32_t nsecs1, nsecs2;
+    int i;
+    volatile int j;
+    time_t secs1, secs2;
+    uint32_t nsecs1, nsecs2;
 
-	(void)junk;
+    (void)junk;
 
-	for (i=0; i<NCVLOOPS; i++) {
-		lock_acquire(testlock);
-		while (testval1 != num) {
-			gettime(&secs1, &nsecs1);
-			cv_wait(testcv, testlock);
-			gettime(&secs2, &nsecs2);
+    for (i=0; i<NCVLOOPS; i++) {
+        lock_acquire(testlock);
+        while (testval1 != num) {
+            gettime(&secs1, &nsecs1);
+            cv_wait(testcv, testlock);
+            gettime(&secs2, &nsecs2);
 
-			if (nsecs2 < nsecs1) {
-				secs2--;
-				nsecs2 += 1000000000;
-			}
-			
-			nsecs2 -= nsecs1;
-			secs2 -= secs1;
+            if (nsecs2 < nsecs1) {
+                secs2--;
+                nsecs2 += 1000000000;
+            }
+            
+            nsecs2 -= nsecs1;
+            secs2 -= secs1;
 
-			/* Require at least 2000 cpu cycles (we're 25mhz) */
-			if (secs2==0 && nsecs2 < 40*2000) {
-				kprintf("cv_wait took only %u ns\n", nsecs2);
-				kprintf("That's too fast... you must be "
-					"busy-looping\n");
-				V(donesem);
-				thread_exit();
-			}
+            /* Require at least 2000 cpu cycles (we're 25mhz) */
+            if (secs2==0 && nsecs2 < 40*2000) {
+                kprintf("cv_wait took only %u ns\n", nsecs2);
+                kprintf("That's too fast... you must be "
+                    "busy-looping\n");
+                V(donesem);
+                thread_exit();
+            }
 
-		}
-		kprintf("Thread %lu\n", num);
-		testval1 = (testval1 + NTHREADS - 1)%NTHREADS;
+        }
+        kprintf("Thread %lu\n", num);
+        testval1 = (testval1 + NTHREADS - 1)%NTHREADS;
 
-		/*
-		 * loop a little while to make sure we can measure the
-		 * time waiting on the cv.
-		 */
-		for (j=0; j<3000; j++);
+        /*
+         * loop a little while to make sure we can measure the
+         * time waiting on the cv.
+         */
+        for (j=0; j<3000; j++);
 
-		cv_broadcast(testcv, testlock);
-		lock_release(testlock);
-	}
-	V(donesem);
+        cv_broadcast(testcv, testlock);
+        lock_release(testlock);
+    }
+    V(donesem);
 #ifdef UW
   thread_exit();
 #endif
@@ -314,36 +314,36 @@ int
 cvtest(int nargs, char **args)
 {
 
-	int i, result;
+    int i, result;
 
-	(void)nargs;
-	(void)args;
+    (void)nargs;
+    (void)args;
 
-	inititems();
-	kprintf("Starting CV test...\n");
+    inititems();
+    kprintf("Starting CV test...\n");
 #ifdef UW
-	kprintf("%d threads should print out in reverse order %d times.\n", NTHREADS, NCVLOOPS);
+    kprintf("%d threads should print out in reverse order %d times.\n", NTHREADS, NCVLOOPS);
 #else
-	kprintf("Threads should print out in reverse order.\n");
+    kprintf("Threads should print out in reverse order.\n");
 #endif
 
-	testval1 = NTHREADS-1;
+    testval1 = NTHREADS-1;
 
-	for (i=0; i<NTHREADS; i++) {
-		result = thread_fork("synchtest", NULL, cvtestthread, NULL, i);
-		if (result) {
-			panic("cvtest: thread_fork failed: %s\n",
-			      strerror(result));
-		}
-	}
-	for (i=0; i<NTHREADS; i++) {
-		P(donesem);
-	}
+    for (i=0; i<NTHREADS; i++) {
+        result = thread_fork("synchtest", NULL, cvtestthread, NULL, i);
+        if (result) {
+            panic("cvtest: thread_fork failed: %s\n",
+                  strerror(result));
+        }
+    }
+    for (i=0; i<NTHREADS; i++) {
+        P(donesem);
+    }
 
 #ifdef UW
   cleanitems();
 #endif
-	kprintf("CV test done\n");
+    kprintf("CV test done\n");
 
-	return 0;
+    return 0;
 }
